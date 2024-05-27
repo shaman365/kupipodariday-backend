@@ -39,9 +39,9 @@ export class WishesService {
     return await this.wishesRepository.save(wish);
   }
   async update(id: string, updateWishDto: UpdateWishDto) {
-    let existWish: Wish;
+    let updWish: Wish;
     try {
-      existWish = await this.wishesRepository.findOne({
+      updWish = await this.wishesRepository.findOne({
         where: {
           id,
         },
@@ -63,14 +63,14 @@ export class WishesService {
       }
     }
     const updatedWish = {
-      id: existWish.id,
-      name: updateWishDto.name ? updateWishDto.name : existWish.name,
-      link: updateWishDto.link ? updateWishDto.link : existWish.link,
-      image: updateWishDto.image ? updateWishDto.image : existWish.image,
-      price: updateWishDto.price ? updateWishDto.price : existWish.price,
+      id: updWish.id,
+      name: updateWishDto.name ? updateWishDto.name : updWish.name,
+      link: updateWishDto.link ? updateWishDto.link : updWish.link,
+      image: updateWishDto.image ? updateWishDto.image : updWish.image,
+      price: updateWishDto.price ? updateWishDto.price : updWish.price,
       description: updateWishDto.description
         ? updateWishDto.description
-        : existWish.description,
+        : updWish.description,
     };
 
     const wish = this.wishesRepository.create(updatedWish);
