@@ -15,7 +15,6 @@ import { UpdateUserDto } from './dto/update-user-dto';
 import { User } from './entities/user.entity';
 import { WishesService } from '../wishes/wishes.service';
 import { JwtGuard } from 'src/auth/guards/jwt-auth-guards';
-import { log } from 'console';
 
 @Controller('users')
 export class UsersController {
