@@ -8,17 +8,20 @@ import {
   Patch,
   Post,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 
 import { WishesService } from './wishes.service';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { User } from '../users/entities/user.entity';
 import { UpdateWishDto } from './dto/update-wish.dto';
+import { JwtGuard } from 'src/auth/guards/jwt-auth-guards';
 
 @Controller('wishes')
 export class WishesController {
   constructor(private readonly wishesService: WishesService) {}
 
+  @UseGuards(JwtGuard)
   @Post()
   create(
     @Body() createWishDto: CreateWishDto,
@@ -27,22 +30,26 @@ export class WishesController {
     return this.wishesService.create(createWishDto, req.user);
   }
 
+  @UseGuards(JwtGuard)
   @Get('last')
   findLast() {
     return this.wishesService.findLast();
   }
 
+  @UseGuards(JwtGuard)
   @Get('top')
   findTop() {
     return this.wishesService.findTop();
   }
 
+  @UseGuards(JwtGuard)
   @Get(':id')
   async findOne(@Param('id') id: string, @Req() req: Request & { user: User }) {
     const isOwner = await this.wishesService.checkOwner(id, req.user.id);
     return await this.wishesService.findOneWihUser(id, isOwner);
   }
 
+  @UseGuards(JwtGuard)
   @Patch(':id')
   async update(
     @Param('id') id: string,
@@ -64,6 +71,7 @@ export class WishesController {
     return await this.wishesService.update(id, updateWishDto);
   }
 
+  @UseGuards(JwtGuard)
   @Delete(':id')
   async removeOne(
     @Param('id') id: string,
@@ -76,6 +84,7 @@ export class WishesController {
     return this.wishesService.removeOne(id);
   }
 
+  @UseGuards(JwtGuard)
   @Post(':id/copy')
   async copyWish(
     @Param('id') id: string,

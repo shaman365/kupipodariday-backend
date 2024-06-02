@@ -8,6 +8,7 @@ import {
   Delete,
   Req,
   ForbiddenException,
+  UseGuards,
 } from '@nestjs/common';
 
 import { WishlistsService } from './wishlists.service';
@@ -16,34 +17,38 @@ import { UpdateWishlistsDto } from './dto/update-wishlists.dto';
 import { User } from '../users/entities/user.entity';
 import { WishesService } from '../wishes/wishes.service';
 import { Wish } from '../wishes/entities/wish.entity';
+import { JwtGuard } from '../auth/guards/jwt-auth-guards';
 
-@Controller('wishlists')
+@Controller('wishlistlists')
 export class WishlistsController {
   constructor(
     private readonly wishlistsService: WishlistsService,
     private readonly wishesService: WishesService,
   ) {}
 
+  @UseGuards(JwtGuard)
   @Get()
   findAll() {
     return this.wishlistsService.findAll();
   }
+  @UseGuards(JwtGuard)
   @Post()
   async create(
     @Body() createWishlistsDto: CreateWishlistsDto,
     @Req() req: Request & { user: User },
   ) {
-    const wishes = await this.wishesService.findManyById(
+    const wishList = await this.wishesService.findManyById(
       createWishlistsDto.itemsId,
     );
-    return this.wishlistsService.create(createWishlistsDto, req.user, wishes);
+    return this.wishlistsService.create(createWishlistsDto, req.user, wishList);
   }
 
+  @UseGuards(JwtGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.wishlistsService.findOne(id);
   }
-
+  @UseGuards(JwtGuard)
   @Patch(':id')
   async update(
     @Param('id') id: string,
@@ -56,15 +61,15 @@ export class WishlistsController {
         'Разрешается изменять только свои wishlists',
       );
     }
-    let wishes: Wish[];
+    let wishList: Wish[];
     if (updateWishlistsDto.itemsId && updateWishlistsDto.itemsId.length > 0) {
-      wishes = await this.wishesService.findManyById(
+      wishList = await this.wishesService.findManyById(
         updateWishlistsDto.itemsId,
       );
     }
-    return this.wishlistsService.update(id, updateWishlistsDto, wishes);
+    return this.wishlistsService.update(id, updateWishlistsDto, wishList);
   }
-
+  @UseGuards(JwtGuard)
   @Delete(':id')
   async removeOne(
     @Param('id') id: string,
