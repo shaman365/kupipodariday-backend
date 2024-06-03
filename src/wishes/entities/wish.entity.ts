@@ -1,13 +1,4 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  ManyToMany,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 import {
   IsInt,
   IsNumber,
@@ -20,18 +11,10 @@ import { ColumnNumericTransformer } from '../../utils/utils';
 import { User } from '../../users/entities/user.entity';
 import { Offer } from '../../offers/entities/offer.entity';
 import { Wishlist } from '../../wishlists/entities/wishlist.entity';
+import { BaseEntity } from 'src/common/entities/base.entity';
 
 @Entity()
-export class Wish {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
-
+export class Wish extends BaseEntity {
   @ManyToOne(() => User, (user) => user.wishes)
   owner: User;
 

@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
@@ -25,7 +24,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),
         entities: [User, Wish, Wishlist, Offer],
-        // autoLoadEntities: true,
         synchronize: true,
       }),
       inject: [ConfigService],
@@ -36,7 +34,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     WishlistsModule,
     AuthModule,
   ],
-  controllers: [AppController],
   providers: [],
 })
 export class AppModule {}

@@ -30,13 +30,11 @@ export class WishesController {
     return this.wishesService.create(createWishDto, req.user);
   }
 
-  @UseGuards(JwtGuard)
   @Get('last')
   findLast() {
     return this.wishesService.findLast();
   }
 
-  @UseGuards(JwtGuard)
   @Get('top')
   findTop() {
     return this.wishesService.findTop();

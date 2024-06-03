@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  ForbiddenException,
   Get,
   Param,
   Post,
@@ -27,23 +26,6 @@ export class OffersController {
     @Body() createOfferDto: CreateOfferDto,
     @Req() req: Request & { user: User },
   ) {
-    const isOwner = await this.wishesService.checkOwner(
-      createOfferDto.itemId,
-      req.user.id,
-    );
-    if (isOwner) {
-      throw new ForbiddenException(
-        'Запрещено скидываться на собственные подарки',
-      );
-    }
-    await this.wishesService.checkRaised(
-      createOfferDto.itemId,
-      createOfferDto.amount,
-    );
-    await this.wishesService.checkPrice(
-      createOfferDto.itemId,
-      createOfferDto.amount,
-    );
     const wish = await this.wishesService.findOne(createOfferDto.itemId);
     await this.offersService.create(createOfferDto, req.user, wish);
     await this.wishesService.updateRaised(

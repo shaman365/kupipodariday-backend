@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QueryFailedError, Repository } from 'typeorm';
 import { CreateOfferDto } from './dto/create-offer-dto';
@@ -6,12 +10,14 @@ import { validate } from 'class-validator';
 import { User } from '../users/entities/user.entity';
 import { Offer } from './entities/offer.entity';
 import { Wish } from '../wishes/entities/wish.entity';
+import { WishesService } from '../wishes/wishes.service';
 
 @Injectable()
 export class OffersService {
   constructor(
     @InjectRepository(Offer)
     private offersRepository: Repository<Offer>,
+    private readonly wishesService: WishesService,
   ) {}
 
   async create(createOfferDto: CreateOfferDto, user: User, wish: Wish) {
@@ -26,6 +32,23 @@ export class OffersService {
       const messages = errors.map((error) => error.constraints);
       throw new BadRequestException(messages);
     }
+    const isOwner = await this.wishesService.checkOwner(
+      createOfferDto.itemId,
+      user.id,
+    );
+    if (isOwner) {
+      throw new ForbiddenException(
+        'Запрещено скидываться на собственные подарки',
+      );
+    }
+    await this.wishesService.checkRaised(
+      createOfferDto.itemId,
+      createOfferDto.amount,
+    );
+    await this.wishesService.checkPrice(
+      createOfferDto.itemId,
+      createOfferDto.amount,
+    );
     await this.offersRepository.save(offer);
   }
 
